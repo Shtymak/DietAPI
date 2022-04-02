@@ -28,13 +28,15 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/mongoose": "^9.0.3",
     "@nestjs/platform-express": "^8.0.0",
+    "bcryptjs": "^2.4.3",
     "brcypt": "^1.0.1",
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.0",
     "mongoose": "^6.2.9",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
