@@ -6,6 +6,7 @@ import { TokenService } from "../token/token.service";
 import { JwtService } from "@nestjs/jwt";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { GetUserDto } from "./dto/get-user.dto";
+import { MailService } from "../mail/mail.service";
 const bcrypt = require('bcryptjs')
 const uuid = require('uuid')
 
@@ -13,7 +14,7 @@ const uuid = require('uuid')
 export class UsersService {
   constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>,
               private tokenService: TokenService,
-              private jwtService: JwtService) {
+              private mailService: MailService ) {
   }
 
   async getTokens(user: UserDocument) {
@@ -41,10 +42,10 @@ export class UsersService {
       name,
     });
     //await FavoriteDiets.create({ user: user._id });
-    // await mailService.sendActivationMail(
-    //   email,
-    //   `${process.env.API_URL}/api/user/activate/${activationLink}`
-    // );
+    await this.mailService.sendActivationMail(
+      email,
+      `${process.env.API_URL}/api/user/activate/${activationLink}`
+    );
     return this.getTokens(user);
   }
 

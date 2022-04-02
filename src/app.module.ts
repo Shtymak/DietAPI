@@ -5,13 +5,16 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { TokenModule } from './token/token.module';
+import { MailService } from './mail/mail.service';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [ ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.URL),
     UsersModule,
-    TokenModule],
+    TokenModule,
+    MailModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, MailService],
 })
 export class AppModule {}
