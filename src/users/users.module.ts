@@ -5,7 +5,6 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { User, UserSchema } from "./users.model";
 import { TokenModule } from "../token/token.module";
 import { JwtModule } from "@nestjs/jwt";
-import { MailService } from "../mail/mail.service";
 import { MailModule } from "../mail/mail.module";
 
 @Module({
