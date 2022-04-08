@@ -24,12 +24,13 @@ export class User {
   @ApiProperty({example: "Male", description:"Стать"})
   @Prop({default: "Male"})
   gender: string
-  @ApiProperty({example: "22-12-12", description:"Дата народження"})
+  @ApiProperty({example: "2022-09-22", description:"Дата народження"})
   @Prop({default: new Date().getDate() })
   dateOfBirth: Date
   @ApiProperty({example: "File", description:"Фото"})
   @Prop({required: false})
   image: string
+  @ApiProperty({example: "dsfh-adbk-fnsdjk", description:"Посилання для активації"})
   @Prop({default: false})
   isActivated: boolean
   @Prop()

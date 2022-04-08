@@ -1,19 +1,20 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { User, UserDocument } from "./users.model";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { TokenService } from "../token/token.service";
-import { JwtService } from "@nestjs/jwt";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { MailService } from "../mail/mail.service";
 import { LoginUserDto } from "./dto/login-user.dto";
-
+import { FavoriteDiets, FavoriteDietsDocument } from "../models/FavoriteDiets";
+import * as mongoose from "mongoose";
 const bcrypt = require("bcryptjs");
 const uuid = require("uuid");
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+              @InjectModel(FavoriteDiets.name) private readonly favoriteDietsModel: Model<FavoriteDietsDocument>,
               private tokenService: TokenService,
               private mailService: MailService) {
   }
@@ -41,7 +42,7 @@ export class UsersService {
       activationLink,
       name
     });
-    //await FavoriteDiets.create({ user: user._id });
+    await this.favoriteDietsModel.create({ user: user._id });
     await this.mailService.sendActivationMail(
       email,
       `${process.env.API_URL}/api/user/activate/${activationLink}`
@@ -86,6 +87,16 @@ export class UsersService {
     }
     const user = await this.userModel.findById(userData.id);
     return this.getTokens(user);
+  }
+  async getOne(id: string){
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new HttpException("Неправильний ідентифікатор", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    const user = await this.userModel.findById(id);
+    if (!user) {
+      throw new HttpException('Користувача не існує', HttpStatus.NOT_FOUND);
+    }
+    return this.getTokens(user)
   }
 
   async getAllUsers() {
