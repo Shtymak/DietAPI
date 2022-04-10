@@ -7,6 +7,7 @@ import { TokenModule } from "../token/token.module";
 import { JwtModule } from "@nestjs/jwt";
 import { MailModule } from "../mail/mail.module";
 import { FavoriteDiets, FavoriteDietsSchema } from "../models/FavoriteDiets";
+import { UserAuthGuard } from "./user-auth.guard";
 
 @Module({
   controllers: [UsersController],
@@ -16,8 +17,10 @@ import { FavoriteDiets, FavoriteDietsSchema } from "../models/FavoriteDiets";
     JwtModule.register(
       { secret: process.env.SECRET_KEY, signOptions: { expiresIn: "7d" } }
     ),
-    MailModule
-  ]
+    MailModule,
+    UserAuthGuard
+  ],
+  exports:[UserAuthGuard, JwtModule]
 })
 export class UsersModule {
 }
