@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpException, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { DietsService } from "./diets.service";
 import { CreateDietDto } from "./dto/create-diet.dto";
-import { ApiBearerAuth, ApiHeader, ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiHeader, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { GetDietDto } from "./dto/get-diet-dto";
 import { UpdateDietDto } from "./dto/update-diet.dto";
 import { DietExeptionDto } from "./dto/exeption.dto";
@@ -13,10 +13,12 @@ import e from "express";
 import { GetRecipeDto } from "../recipes/dto/get-recipe.dto";
 import { FavoriteDietDto } from "./dto/favorite-diet.dto";
 import { JwtAuthGuard } from "../token/auth.guard";
-import { DietStatusDto } from "./dto/diet-status.dto";
+import { StatusDto } from "./dto/status.dto";
 import { FavoriteDiets } from "../models/FavoriteDiets";
+import { Diet } from "./diets.model";
 
 @Controller("api/diet")
+@ApiTags("Дієти")
 export class DietsController {
   constructor(private readonly dietsService: DietsService) {
   }
@@ -166,7 +168,7 @@ export class DietsController {
     summary: "Додати в улюблені рецепти"
   })
   @ApiResponse({
-    status: 200, type: DietStatusDto
+    status: 200, type: StatusDto
   })
   @ApiResponse({
     status: 404, type: DietExeptionDto, description: "Дієту не знайдено"
@@ -193,7 +195,7 @@ export class DietsController {
     summary: "Видалити з улюблених рецептів"
   })
   @ApiResponse({
-    status: 200, type: DietStatusDto
+    status: 200, type: StatusDto
   })
   @ApiResponse({
     status: 404, type: DietExeptionDto, description: "Дієту не знайдено"
@@ -220,7 +222,7 @@ export class DietsController {
     summary: "Список улюблених дієт"
   })
   @ApiResponse({
-    status: 200, type: [FavoriteDiets]
+    status: 200, type: [Diet]
   })
   @ApiResponse({
     status: 404, type: DietExeptionDto, description: "Дієту не знайдено"
@@ -232,7 +234,7 @@ export class DietsController {
     try {
       const { id } = req.user;
       const favorites = await this.dietsService.getFavorites(id);
-      return  favorites.diets;
+      return  favorites;
     } catch (e) {
       throw new HttpException(e.message, e.status);
     }

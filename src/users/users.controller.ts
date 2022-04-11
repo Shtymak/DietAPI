@@ -13,7 +13,7 @@ import {
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { LoginUserDto } from "./dto/login-user.dto";
-import { ApiBearerAuth, ApiHeader, ApiOperation, ApiProperty, ApiResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiHeader, ApiOperation, ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { GetTokenDto } from "../token/dto/get-token.dto";
 import { User } from "./users.model";
 import {Response, Request} from "express";
@@ -28,6 +28,7 @@ const path = require('path');
 const uuid = require('uuid')
 
 @Controller("api/user")
+@ApiTags("Користувачі")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {
   }

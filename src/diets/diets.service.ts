@@ -152,7 +152,11 @@ export class DietsService {
     if (!favorites) {
       throw new NotFoundException('Помилка! Цей користувач не обирав улюблені дієти');
     }
-    return favorites;
+    const favoriteObjects = await this.dietModel.find({
+      id:
+        {$in: favorites.diets}
+    })
+    return favoriteObjects.map(x=>new GetDietDto(x));
   }
 
 }
