@@ -1,4 +1,15 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post, Put,
+  Req,
+  Res,
+  UseGuards
+} from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { LoginUserDto } from "./dto/login-user.dto";
@@ -7,9 +18,14 @@ import { GetTokenDto } from "../token/dto/get-token.dto";
 import { User } from "./users.model";
 import {Response, Request} from "express";
 import { UserLogoutDto } from "./dto/user-logout.dto";
-import { UserAuthGuard } from "./user-auth.guard";
-const { Types } = require('mongoose');
-
+import { JwtAuthGuard } from "../token/auth.guard";
+import { Roles } from "../token/roles-auth.decorator";
+import { RolesGuard } from "../token/roles.guard";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { ExeptionDto } from "./dto/exeption-dto";
+const fileType = '.jpg';
+const path = require('path');
+const uuid = require('uuid')
 
 @Controller("api/user")
 export class UsersController {
@@ -65,7 +81,58 @@ export class UsersController {
     }
     throw new HttpException('Ви не авторизовані', HttpStatus.UNAUTHORIZED);
   }
+  @ApiOperation({
+    summary: "Активація"
+  })
+  @Get('/activate/:link')
+  async activate(@Res() response: Response, @Param('link') link: string){
+    await this.usersService.activate(link)
+    response.redirect('https://google.com')
+  }
+  @ApiOperation({
+    summary: "Поновлення доступу"
+  })
+  @ApiResponse({
+    status: 200, type: GetTokenDto
+  })
+  @Get('/refresh')
+  async refresh(@Res() response: Response, @Req() request: Request){
+    try {
+      const { refreshToken } = request.cookies;
+      const userData = await this.usersService.refresh(refreshToken);
+      response.cookie('refreshToken', userData.refreshToken, {
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+      });
+      return response.json(userData);
+    } catch (e) {
+      throw new HttpException(e.message, e.status)
+    }
+  }
 
+  @Put('/update')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Оновлення даних профілю"
+  })
+  @ApiResponse({
+    status: 200, type: GetTokenDto
+  })
+  @ApiResponse({
+    status: 200, type: GetTokenDto
+  })
+  @ApiResponse({
+    status: 404, type: ExeptionDto
+  })
+async update(@Body() body:UpdateUserDto, @Req()req){
+    const {id} = req.user
+    const { image } = req.files;
+    const fileName = uuid.v4() + fileType;
+    image.mv(path.resolve(__dirname, '..', 'static', fileName))
+      .then((r) => console.log(r));
+    const data = await this.usersService.update(id, body, fileName)
+    return data
+  }
 
   @Get("/all")
   @ApiOperation({
@@ -74,9 +141,13 @@ export class UsersController {
   @ApiResponse({
     status: 200, type: [User]
   })
+  @ApiResponse({
+    status: 403, description: "Відсутній доступ"
+  })
   @ApiBearerAuth('Jwt-token')
   @ApiHeader({name: "Bearer token", required: true})
-  @UseGuards(UserAuthGuard)
+  @Roles("ADMIN")
+  @UseGuards(RolesGuard)
   async getAllUsers() {
     return this.usersService.getAllUsers();
   }

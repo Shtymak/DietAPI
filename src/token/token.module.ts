@@ -2,8 +2,9 @@ import { Module } from "@nestjs/common";
 import { TokenService } from "./token.service";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Token, TokenSchema } from "./token.model";
-import { JwtModule } from "@nestjs/jwt";
+import { JwtModule, JwtService } from "@nestjs/jwt";
 import { ConfigModule } from "@nestjs/config";
+import { JwtAuthGuard } from "./auth.guard";
 
 @Module({
   providers: [TokenService],

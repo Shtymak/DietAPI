@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { User, UserDocument } from "./users.model";
 import { Model, Types } from "mongoose";
@@ -8,8 +8,10 @@ import { MailService } from "../mail/mail.service";
 import { LoginUserDto } from "./dto/login-user.dto";
 import { FavoriteDiets, FavoriteDietsDocument } from "../models/FavoriteDiets";
 import * as mongoose from "mongoose";
+import { UpdateUserDto } from "./dto/update-user.dto";
 const bcrypt = require("bcryptjs");
 const uuid = require("uuid");
+
 
 @Injectable()
 export class UsersService {
@@ -103,6 +105,27 @@ export class UsersService {
     const users = await this.userModel.find();
     const count = users.reduce((total) => total + 1, 0);
     return { users, count };
+  }
+
+  async update(id: mongoose.Schema.Types.ObjectId, updateParams: UpdateUserDto, fileName: string){
+    const user = await this.userModel.findOne({ _id: id });
+    if (!user) {
+      throw new NotFoundException(user);
+    }
+    const   { height, weight, gender, dateOfBirth } = updateParams;
+    const result = await this.userModel.findByIdAndUpdate(
+      { _id: user._id },
+      {
+        $set: {
+          height: height,
+          weight: weight,
+          gender: gender,
+          dateOfBirth: new Date(dateOfBirth),
+          image: fileName,
+        },
+      }
+    );
+    return this.getTokens(result);
   }
 
 }
