@@ -8,6 +8,7 @@ import { TokenModule } from './token/token.module';
 import { MailService } from './mail/mail.service';
 import { MailModule } from './mail/mail.module';
 import { DietsModule } from './diets/diets.module';
+import { RecipesModule } from './recipes/recipes.module';
 
 @Module({
   imports: [ ConfigModule.forRoot(),
@@ -15,7 +16,8 @@ import { DietsModule } from './diets/diets.module';
     UsersModule,
     TokenModule,
     MailModule,
-    DietsModule],
+    DietsModule,
+    RecipesModule],
   controllers: [AppController],
   providers: [AppService, MailService],
 })

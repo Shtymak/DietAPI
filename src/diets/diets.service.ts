@@ -5,6 +5,9 @@ import { Model, Types } from "mongoose";
 import { GetDietDto } from "./dto/get-diet-dto";
 import { AddRecipeDto } from "./dto/add-recipe.dto";
 import { GetAddRecipeDto } from "./dto/get-add-recipe-dto";
+import { Recipe, RecipeDocument } from "../recipes/recipe.model";
+import { GetRecipeDto } from "../recipes/dto/get-recipe.dto";
+import { FavoriteDiets, FavoriteDietsDocument } from "../models/FavoriteDiets";
 const fileType = '.jpg';
 const path = require('path');
 const uuid = require('uuid')
@@ -21,7 +24,9 @@ function isValidDietAndRecipeIds(dietId, recepieId = null) {
 
 @Injectable()
 export class DietsService {
-  constructor(@InjectModel(Diet.name) private readonly dietModel: Model<DietDocument>) {
+  constructor(@InjectModel(Diet.name) private readonly dietModel: Model<DietDocument>,
+              @InjectModel(Recipe.name) private readonly recipeModel: Model<RecipeDocument>,
+              @InjectModel(FavoriteDiets.name) private readonly favoriteDietsModel: Model<FavoriteDietsDocument>) {
   }
 
   async create(name, image) : Promise<GetDietDto> {
@@ -55,10 +60,13 @@ export class DietsService {
       throw new HttpException("Дані не коректні", HttpStatus.INTERNAL_SERVER_ERROR)
     }
     const diet = await this.dietModel.findById(dietId)
+    const recipe = await this.recipeModel.findById(recepieId)
     if(!diet){
       throw new NotFoundException('Дієту не знайдено')
     }
-    //Todo: add recipe id finder
+    if(!recipe){
+      throw new NotFoundException('Рецепт не знайдено')
+    }
     const result = await this.dietModel.updateOne(
       { _id: dietId },
       {
@@ -68,6 +76,83 @@ export class DietsService {
       }
     );
     return new GetAddRecipeDto(result);
+  }
+  async removeRecipe(dietId, recipeId) {
+    if (!isValidDietAndRecipeIds(dietId, recipeId)) {
+      throw new HttpException('Некоректний id параметр', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    const result = await this.dietModel.deleteOne(
+      { _id: dietId },
+      {
+        $pull: {
+          recipes: new Types.ObjectId(recipeId),
+        },
+      }
+    );
+    return new GetAddRecipeDto(result);
+  }
+  async getRecipes(id:string) {
+    const diet = await this.dietModel.findById(id);
+    if (!diet) {
+      throw new NotFoundException('Дієту не знайдено')
+    }
+    const recipes = await this.recipeModel.find({
+      id: {
+        $in:
+          diet.recipes
+      },
+    });
+    const recipesDto = recipes.map((recipe) => new GetRecipeDto(recipe));
+    return recipesDto;
+  }
+
+  async addToFavorite(dietId, id) {
+    if (!Types.ObjectId.isValid(dietId)) {
+      throw new NotFoundException('Дієту не знайдено')
+    }
+    const diet = await this.dietModel.findById(dietId);
+    if (!diet) {
+      throw new NotFoundException('Дієту не знайдено')
+    }
+    const result = await this.favoriteDietsModel.updateOne(
+      {
+        user: id,
+      },
+      {
+        $addToSet: {
+          diets: new Types.ObjectId(dietId),
+        },
+      }
+    );
+    return result;
+  }
+  async removeFromFavorite(dietId, id) {
+    if (!Types.ObjectId.isValid(dietId)) {
+      throw new NotFoundException('Дієту не знайдено')
+    }
+    const diet = await this.dietModel.findById(dietId);
+    if (!diet) {
+      throw new NotFoundException('Дієту не знайдено')
+    }
+    const result = await this.favoriteDietsModel.updateOne(
+      {
+        user: id,
+      },
+      {
+        $pull: {
+          diets: new Types.ObjectId(dietId),
+        },
+      }
+    );
+    return result;
+  }
+
+  async getFavorites(id) {
+    const favorites = await this.favoriteDietsModel.findOne({ user: id });
+    if (!favorites) {
+      throw new NotFoundException('Помилка! Цей користувач не обирав улюблені дієти');
+    }
+    return favorites;
   }
 
 }
