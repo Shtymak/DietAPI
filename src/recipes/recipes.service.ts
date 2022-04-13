@@ -6,10 +6,12 @@ import { CreateRecipeDto } from "./dto/create-recipe.dto";
 import { GetRecipeDto } from "./dto/get-recipe.dto";
 import { UpdateRecipeDto } from "./dto/update-recipe.dto";
 import { AddIngredientDto } from "./dto/add-ingredient.dto";
+import { Ingredient, IngredientDocument } from "../ingredients/ingredients.model";
 
 @Injectable()
 export class RecipesService {
-  constructor(@InjectModel(Recipe.name) private readonly recipeModel: Model<RecipeDocument>) {
+  constructor(@InjectModel(Recipe.name) private readonly recipeModel: Model<RecipeDocument>,
+              @InjectModel(Ingredient.name) private readonly ingredientModel: Model<IngredientDocument>) {
   }
 
 
@@ -59,7 +61,10 @@ export class RecipesService {
     if(!Types.ObjectId.isValid(ingredientId)){
       throw new BadRequestException(`Хибний ідентифікатор ${recipeId}`)
     }
-    //const ingredient = await this.
+    const ingredient = await this.ingredientModel.findById(ingredientId)
+    if(!ingredient){
+      throw new NotFoundException('Інгредієнт не знайдено')
+    }
     const result = this.recipeModel.updateOne({
         id: recipeId }, {
         $addToSet: new Types.ObjectId(ingredientId)
