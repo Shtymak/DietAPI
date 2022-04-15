@@ -5,7 +5,7 @@ import { Model, Types } from "mongoose";
 import { CreateRecipeDto } from "./dto/create-recipe.dto";
 import { GetRecipeDto } from "./dto/get-recipe.dto";
 import { UpdateRecipeDto } from "./dto/update-recipe.dto";
-import { AddIngredientDto } from "./dto/add-ingredient.dto";
+import { InputIngredientDto } from "./dto/input-ingredient.dto";
 import { Ingredient, IngredientDocument } from "../ingredients/ingredients.model";
 
 @Injectable()
@@ -53,22 +53,48 @@ export class RecipesService {
     return new GetRecipeDto(result);
   }
 
-  async addIngredient(body: AddIngredientDto) {
+  async addIngredient(body: InputIngredientDto) {
     const { ingredientId, recipeId } = body;
-    if(!Types.ObjectId.isValid(ingredientId)){
-      throw new BadRequestException(`Хибний ідентифікатор ${ingredientId}`)
+    if (!Types.ObjectId.isValid(ingredientId)) {
+      throw new BadRequestException(`Хибний ідентифікатор ${ingredientId}`);
     }
-    if(!Types.ObjectId.isValid(ingredientId)){
-      throw new BadRequestException(`Хибний ідентифікатор ${recipeId}`)
+    if (!Types.ObjectId.isValid(ingredientId)) {
+      throw new BadRequestException(`Хибний ідентифікатор ${recipeId}`);
     }
-    const ingredient = await this.ingredientModel.findById(ingredientId)
-    if(!ingredient){
-      throw new NotFoundException('Інгредієнт не знайдено')
+    const ingredient = await this.ingredientModel.findById(ingredientId);
+    if (!ingredient) {
+      throw new NotFoundException("Інгредієнт не знайдено");
     }
     const result = this.recipeModel.updateOne({
-        id: recipeId }, {
-        $addToSet: new Types.ObjectId(ingredientId)
+      id: recipeId
+    }, {
+      $addToSet: {
+        ingredients: new Types.ObjectId(ingredientId)
+      }
+    });
+    return result;
+  }
+
+  async removeIngredient(body: InputIngredientDto) {
+    const { ingredientId, recipeId } = body;
+    if (!Types.ObjectId.isValid(ingredientId)) {
+      throw new BadRequestException(`Хибний ідентифікатор ${ingredientId}`);
+    }
+    if (!Types.ObjectId.isValid(ingredientId)) {
+      throw new BadRequestException(`Хибний ідентифікатор ${recipeId}`);
+    }
+    const ingredient = await this.ingredientModel.findById(ingredientId);
+    if (!ingredient) {
+      throw new NotFoundException("Інгредієнт не знайдено");
+    }
+    const result = await this.recipeModel.updateOne({
+        id: recipeId
+      },
+      {
+        $pull: {
+          ingredients: ingredient
+        }
       });
-    return result
+    return result;
   }
 }

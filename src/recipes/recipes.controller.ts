@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { RecipesService } from "./recipes.service";
 import { CreateRecipeDto } from "./dto/create-recipe.dto";
 import { ApiBearerAuth, ApiHeader, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -8,7 +8,7 @@ import { GetRecipeDto } from "./dto/get-recipe.dto";
 import { DietExeptionDto } from "../diets/dto/exeption.dto";
 import { JwtAuthGuard } from "../token/auth.guard";
 import { UpdateRecipeDto } from "./dto/update-recipe.dto";
-import { AddIngredientDto } from "./dto/add-ingredient.dto";
+import { InputIngredientDto } from "./dto/input-ingredient.dto";
 import { StatusDto } from "../diets/dto/status.dto";
 
 const path = require("path");
@@ -111,7 +111,7 @@ export class RecipesController {
     }
   }
 
-  @Post('/ingrediets/add')
+  @Post('/ingredients/add')
   @ApiResponse({
     status: 200, type: StatusDto
   })
@@ -131,10 +131,39 @@ export class RecipesController {
   @ApiHeader({ name: "Bearer token", required: true })
   @Roles("ADMIN")
   @UseGuards(RolesGuard)
-  async addIngredient(@Body() body: AddIngredientDto){
+  async addIngredient(@Body() body: InputIngredientDto){
     try{
       const result = await this.recipesService.addIngredient(body)
-      return result;
+      return result.modifiedCount > 0 ? {status: 'OK'} : {status: 'FAIL'}
+    }catch (e) {
+      throw new HttpException(e.message, e.status);
+    }
+  }
+  
+  @Delete('/ingredients/remove')
+  @ApiResponse({
+    status: 200, type: StatusDto
+  })
+  @ApiResponse({
+    status: 400, type: DietExeptionDto, description: "Хибний ідентифікатор"
+  })
+  @ApiResponse({
+    status: 403, type: DietExeptionDto, description: "Відсутній доступ"
+  })
+  @ApiResponse({
+    status: 404, type: DietExeptionDto, description: "Рецепту з таким ідентифікатору немає"
+  })
+  @ApiResponse({
+    status: 500, type: DietExeptionDto, description: "Рецепт з такою назвою вже існує"
+  })
+  @ApiBearerAuth("Jwt-token")
+  @ApiHeader({ name: "Bearer token", required: true })
+  @Roles("ADMIN")
+  @UseGuards(RolesGuard)
+  async removeIngredient(@Body() body: InputIngredientDto){
+    try{
+      const result = await this.recipesService.removeIngredient(body)
+      return result.modifiedCount > 0 ? {status: 'OK'} : {status: 'FAIL'}
     }catch (e) {
       throw new HttpException(e.message, e.status);
     }
