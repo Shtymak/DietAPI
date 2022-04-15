@@ -37,7 +37,7 @@ export class UsersController {
     summary: "Створення облікового запису користувача"
   })
   @ApiResponse({
-    status: 200, type: GetTokenDto
+    status: HttpStatus.CREATED, type: GetTokenDto
   })
   @Post("registration")
   async registration(@Body() user: CreateUserDto) {
@@ -48,7 +48,7 @@ export class UsersController {
     summary: "Вхід в обліковий запис"
   })
   @ApiResponse({
-    status: 200, type: GetTokenDto
+    status: HttpStatus.OK, type: GetTokenDto
   })
   @Post("login")
   async login(@Body() user: LoginUserDto, @Res() response: Response) {
@@ -64,7 +64,7 @@ export class UsersController {
     summary: "Вихід з облікового запису"
   })
   @ApiResponse({
-    status: 200, type: UserLogoutDto
+    status: HttpStatus.OK, type: UserLogoutDto
   })
   @Post("logout")
   async logout(@Res() response: Response, @Req() request: Request) {
@@ -94,7 +94,7 @@ export class UsersController {
     summary: "Поновлення доступу"
   })
   @ApiResponse({
-    status: 200, type: GetTokenDto
+    status: HttpStatus.OK, type: GetTokenDto
   })
   @Get('/refresh')
   async refresh(@Res() response: Response, @Req() request: Request){
@@ -117,13 +117,10 @@ export class UsersController {
     summary: "Оновлення даних профілю"
   })
   @ApiResponse({
-    status: 200, type: GetTokenDto
+    status: HttpStatus.OK, type: GetTokenDto
   })
   @ApiResponse({
-    status: 200, type: GetTokenDto
-  })
-  @ApiResponse({
-    status: 404, type: ExeptionDto
+    status: HttpStatus.NOT_FOUND, type: ExeptionDto
   })
 async update(@Body() body:UpdateUserDto, @Req()req){
     const {id} = req.user
@@ -140,10 +137,10 @@ async update(@Body() body:UpdateUserDto, @Req()req){
     summary: "Список всіх користувачів"
   })
   @ApiResponse({
-    status: 200, type: [User]
+    status: HttpStatus.OK, type: [User]
   })
   @ApiResponse({
-    status: 403, description: "Відсутній доступ"
+    status: HttpStatus.FORBIDDEN, description: "Відсутній доступ"
   })
   @ApiBearerAuth('Jwt-token')
   @ApiHeader({name: "Bearer token", required: true})
@@ -157,7 +154,7 @@ async update(@Body() body:UpdateUserDto, @Req()req){
     summary: "Отримання даних про користувача"
   })
   @ApiResponse({
-    status: 200, type: GetTokenDto
+    status: HttpStatus.OK, type: GetTokenDto
   })
   @Get('/:id')
   async getOne(@Param('id') id: string) {

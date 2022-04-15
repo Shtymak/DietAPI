@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpException, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Req,
+  UseGuards
+} from "@nestjs/common";
 import { DietsService } from "./diets.service";
 import { CreateDietDto } from "./dto/create-diet.dto";
 import { ApiBearerAuth, ApiHeader, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -28,7 +40,7 @@ export class DietsController {
     summary: "Створення дієти"
   })
   @ApiResponse({
-    status: 200, type: GetDietDto
+    status: HttpStatus.CREATED, type: GetDietDto
   })
   @ApiBearerAuth("Jwt-token")
   @ApiHeader({ name: "Bearer token", required: true })
@@ -57,13 +69,13 @@ export class DietsController {
     summary: "Оновлення назви дієти"
   })
   @ApiResponse({
-    status: 200, type: GetDietDto
+    status: HttpStatus.OK, type: GetDietDto
   })
   @ApiResponse({
-    status: 403, type: DietExeptionDto, description: "Відмовлено в доступі"
+    status: HttpStatus.FORBIDDEN, type: DietExeptionDto, description: "Відмовлено в доступі"
   })
   @ApiResponse({
-    status: 404, type: DietExeptionDto, description: "Дієту не знайдено"
+    status: HttpStatus.NOT_FOUND, type: DietExeptionDto, description: "Дієту не знайдено"
   })
   @ApiBearerAuth("Jwt-token")
   @ApiHeader({ name: "Bearer token", required: true })
@@ -91,13 +103,13 @@ export class DietsController {
     summary: "Додавання рецепту до дієти"
   })
   @ApiResponse({
-    status: 200, type: GetAddRecipeDto
+    status: HttpStatus.OK, type: GetDietDto
   })
   @ApiResponse({
-    status: 403, type: DietExeptionDto, description: "Відмовлено в доступі"
+    status: HttpStatus.FORBIDDEN, type: DietExeptionDto, description: "Відмовлено в доступі"
   })
   @ApiResponse({
-    status: 404, type: DietExeptionDto, description: "Дієту не знайдено"
+    status: HttpStatus.NOT_FOUND, type: DietExeptionDto, description: "Дієту не знайдено"
   })
   @ApiBearerAuth("Jwt-token")
   @ApiHeader({ name: "Bearer token", required: true })
@@ -118,13 +130,13 @@ export class DietsController {
     summary: "Видалення рецепту із дієти"
   })
   @ApiResponse({
-    status: 200, type: GetAddRecipeDto
+    status: HttpStatus.OK, type: GetDietDto
   })
   @ApiResponse({
-    status: 403, type: DietExeptionDto, description: "Відмовлено в доступі"
+    status: HttpStatus.FORBIDDEN, type: DietExeptionDto, description: "Відмовлено в доступі"
   })
   @ApiResponse({
-    status: 404, type: DietExeptionDto, description: "Дієту не знайдено"
+    status: HttpStatus.NOT_FOUND, type: DietExeptionDto, description: "Дієту не знайдено"
   })
   @ApiBearerAuth("Jwt-token")
   @ApiHeader({ name: "Bearer token", required: true })
@@ -145,10 +157,10 @@ export class DietsController {
     summary: "Список всіх рецептів"
   })
   @ApiResponse({
-    status: 200, type: [GetRecipeDto]
+    status: HttpStatus.OK, type: [GetRecipeDto]
   })
   @ApiResponse({
-    status: 404, type: DietExeptionDto, description: "Дієту не знайдено"
+    status: HttpStatus.NOT_FOUND, type: DietExeptionDto, description: "Дієту не знайдено"
   })
   async getRecipes(@Param('id') id: string) {
     try {
@@ -168,13 +180,13 @@ export class DietsController {
     summary: "Додати в улюблені рецепти"
   })
   @ApiResponse({
-    status: 200, type: StatusDto
+    status: HttpStatus.OK, type: StatusDto
   })
   @ApiResponse({
-    status: 404, type: DietExeptionDto, description: "Дієту не знайдено"
+    status: HttpStatus.NOT_FOUND, type: DietExeptionDto, description: "Дієту не знайдено"
   })
   @ApiResponse({
-    status: 500, type: DietExeptionDto, description: "Операція неможлива"
+    status: HttpStatus.INTERNAL_SERVER_ERROR, type: DietExeptionDto, description: "Операція неможлива"
   })
   async addToFavorite(@Body() body: FavoriteDietDto, @Req() req) {
     try {
@@ -195,13 +207,13 @@ export class DietsController {
     summary: "Видалити з улюблених рецептів"
   })
   @ApiResponse({
-    status: 200, type: StatusDto
+    status: HttpStatus.OK, type: StatusDto
   })
   @ApiResponse({
-    status: 404, type: DietExeptionDto, description: "Дієту не знайдено"
+    status: HttpStatus.NOT_FOUND, type: DietExeptionDto, description: "Дієту не знайдено"
   })
   @ApiResponse({
-    status: 500, type: DietExeptionDto, description: "Операція неможлива"
+    status: HttpStatus.INTERNAL_SERVER_ERROR, type: DietExeptionDto, description: "Операція неможлива"
   })
   async removeFromFavorites(@Body()body:FavoriteDietDto, @Req() req){
     try {
@@ -222,13 +234,13 @@ export class DietsController {
     summary: "Список улюблених дієт"
   })
   @ApiResponse({
-    status: 200, type: [Diet]
+    status: HttpStatus.OK, type: StatusDto
   })
   @ApiResponse({
-    status: 404, type: DietExeptionDto, description: "Дієту не знайдено"
+    status: HttpStatus.NOT_FOUND, type: DietExeptionDto, description: "Дієту не знайдено"
   })
   @ApiResponse({
-    status: 500, type: DietExeptionDto, description: "Операція неможлива"
+    status: HttpStatus.INTERNAL_SERVER_ERROR, type: DietExeptionDto, description: "Операція неможлива"
   })
   async getFavorites(@Req() req){
     try {

@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpException, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Req,
+  UseGuards
+} from "@nestjs/common";
 import { RecipesService } from "./recipes.service";
 import { CreateRecipeDto } from "./dto/create-recipe.dto";
 import { ApiBearerAuth, ApiHeader, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -26,13 +38,13 @@ export class RecipesController {
     summary: "Додати новий рецепт"
   })
   @ApiResponse({
-    status: 200, type: GetRecipeDto
+    status: HttpStatus.CREATED, type: GetRecipeDto
   })
   @ApiResponse({
-    status: 403, type: DietExeptionDto, description: "Відсутній доступ"
+    status: HttpStatus.FORBIDDEN, type: DietExeptionDto, description: "Відсутній доступ"
   })
   @ApiResponse({
-    status: 500, type: DietExeptionDto, description: "Рецепт з такою назвою вже існує"
+    status: HttpStatus.NOT_FOUND, type: DietExeptionDto, description: "Рецепт з такою назвою вже існує"
   })
   @ApiBearerAuth("Jwt-token")
   @ApiHeader({ name: "Bearer token", required: true })
@@ -56,16 +68,16 @@ export class RecipesController {
     summary: "Отримати дані про рецепт"
   })
   @ApiResponse({
-    status: 200, type: GetRecipeDto
+    status: HttpStatus.OK, type: GetRecipeDto
   })
   @ApiResponse({
-    status: 400, type: DietExeptionDto, description: "Хибний ідентифікатор"
+    status: HttpStatus.BAD_REQUEST, type: DietExeptionDto, description: "Хибний ідентифікатор"
   })
   @ApiResponse({
-    status: 403, type: DietExeptionDto, description: "Відсутній доступ"
+    status: HttpStatus.FORBIDDEN, type: DietExeptionDto, description: "Відсутній доступ"
   })
   @ApiResponse({
-    status: 500, type: DietExeptionDto, description: "Рецепт з такою назвою вже існує"
+    status: HttpStatus.INTERNAL_SERVER_ERROR, type: DietExeptionDto, description: "Рецепт з такою назвою вже існує"
   })
   @ApiBearerAuth("Jwt-token")
   @ApiHeader({ name: "Bearer token", required: true })
@@ -84,19 +96,19 @@ export class RecipesController {
     summary: "Оновити назву рецепту"
   })
   @ApiResponse({
-    status: 200, type: GetRecipeDto
+    status: HttpStatus.OK, type: GetRecipeDto
   })
   @ApiResponse({
-    status: 400, type: DietExeptionDto, description: "Хибний ідентифікатор"
+    status: HttpStatus.BAD_REQUEST, type: DietExeptionDto, description: "Хибний ідентифікатор"
   })
   @ApiResponse({
-    status: 403, type: DietExeptionDto, description: "Відсутній доступ"
+    status: HttpStatus.FORBIDDEN, type: DietExeptionDto, description: "Відсутній доступ"
   })
   @ApiResponse({
-    status: 404, type: DietExeptionDto, description: "Рецепту з таким ідентифікатору немає"
+    status: HttpStatus.NOT_FOUND, type: DietExeptionDto, description: "Рецепту з таким ідентифікатору немає"
   })
   @ApiResponse({
-    status: 500, type: DietExeptionDto, description: "Рецепт з такою назвою вже існує"
+    status: HttpStatus.INTERNAL_SERVER_ERROR, type: DietExeptionDto, description: "Рецепт з такою назвою вже існує"
   })
   @ApiBearerAuth("Jwt-token")
   @ApiHeader({ name: "Bearer token", required: true })
@@ -105,66 +117,72 @@ export class RecipesController {
   async update(@Body() body: UpdateRecipeDto) {
     try {
       const recipe = await this.recipesService.update(body);
-      return recipe
+      return recipe;
     } catch (e) {
       throw new HttpException(e.message, e.status);
     }
   }
 
-  @Post('/ingredients/add')
-  @ApiResponse({
-    status: 200, type: StatusDto
+  @Post("/ingredients/add")
+  @ApiOperation({
+    summary: "Оновити назву рецепту"
   })
   @ApiResponse({
-    status: 400, type: DietExeptionDto, description: "Хибний ідентифікатор"
+    status: HttpStatus.OK, type: GetRecipeDto
   })
   @ApiResponse({
-    status: 403, type: DietExeptionDto, description: "Відсутній доступ"
+    status: HttpStatus.BAD_REQUEST, type: DietExeptionDto, description: "Хибний ідентифікатор"
   })
   @ApiResponse({
-    status: 404, type: DietExeptionDto, description: "Рецепту з таким ідентифікатору немає"
+    status: HttpStatus.FORBIDDEN, type: DietExeptionDto, description: "Відсутній доступ"
   })
   @ApiResponse({
-    status: 500, type: DietExeptionDto, description: "Рецепт з такою назвою вже існує"
+    status: HttpStatus.NOT_FOUND, type: DietExeptionDto, description: "Рецепту з таким ідентифікатору немає"
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR, type: DietExeptionDto, description: "Рецепт з такою назвою вже існує"
   })
   @ApiBearerAuth("Jwt-token")
   @ApiHeader({ name: "Bearer token", required: true })
   @Roles("ADMIN")
   @UseGuards(RolesGuard)
-  async addIngredient(@Body() body: InputIngredientDto){
-    try{
-      const result = await this.recipesService.addIngredient(body)
-      return result.modifiedCount > 0 ? {status: 'OK'} : {status: 'FAIL'}
-    }catch (e) {
+  async addIngredient(@Body() body: InputIngredientDto) {
+    try {
+      const result = await this.recipesService.addIngredient(body);
+      return result.modifiedCount > 0 ? { status: "OK" } : { status: "FAIL" };
+    } catch (e) {
       throw new HttpException(e.message, e.status);
     }
   }
-  
-  @Delete('/ingredients/remove')
-  @ApiResponse({
-    status: 200, type: StatusDto
+
+  @Delete("/ingredients/remove")
+  @ApiOperation({
+    summary: "Оновити назву рецепту"
   })
   @ApiResponse({
-    status: 400, type: DietExeptionDto, description: "Хибний ідентифікатор"
+    status: HttpStatus.OK, type: GetRecipeDto
   })
   @ApiResponse({
-    status: 403, type: DietExeptionDto, description: "Відсутній доступ"
+    status: HttpStatus.BAD_REQUEST, type: DietExeptionDto, description: "Хибний ідентифікатор"
   })
   @ApiResponse({
-    status: 404, type: DietExeptionDto, description: "Рецепту з таким ідентифікатору немає"
+    status: HttpStatus.FORBIDDEN, type: DietExeptionDto, description: "Відсутній доступ"
   })
   @ApiResponse({
-    status: 500, type: DietExeptionDto, description: "Рецепт з такою назвою вже існує"
+    status: HttpStatus.NOT_FOUND, type: DietExeptionDto, description: "Рецепту з таким ідентифікатору немає"
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR, type: DietExeptionDto, description: "Рецепт з такою назвою вже існує"
   })
   @ApiBearerAuth("Jwt-token")
   @ApiHeader({ name: "Bearer token", required: true })
   @Roles("ADMIN")
   @UseGuards(RolesGuard)
-  async removeIngredient(@Body() body: InputIngredientDto){
-    try{
-      const result = await this.recipesService.removeIngredient(body)
-      return result.modifiedCount > 0 ? {status: 'OK'} : {status: 'FAIL'}
-    }catch (e) {
+  async removeIngredient(@Body() body: InputIngredientDto) {
+    try {
+      const result = await this.recipesService.removeIngredient(body);
+      return result.modifiedCount > 0 ? { status: "OK" } : { status: "FAIL" };
+    } catch (e) {
       throw new HttpException(e.message, e.status);
     }
   }
