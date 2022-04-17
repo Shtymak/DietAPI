@@ -5,7 +5,7 @@ export type IngredientDocument = Ingredient & Document;
 
 @Schema()
 export class Ingredient {
-  @ApiProperty({example: "Боби", description:"Інгредієнту"})
+  @ApiProperty({example: "Боби", description:"Назва інгредієнту"})
   @Prop({ unique: true, required: true })
   name: string;
 }

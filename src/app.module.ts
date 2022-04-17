@@ -10,6 +10,8 @@ import { MailModule } from './mail/mail.module';
 import { DietsModule } from './diets/diets.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { IngredientsModule } from './ingredients/ingredients.module';
+import { FitnessModule } from './fitness/fitness.module';
+import { ExerciseModule } from './exercise/exercise.module';
 
 @Module({
   imports: [ ConfigModule.forRoot(),
@@ -19,7 +21,9 @@ import { IngredientsModule } from './ingredients/ingredients.module';
     MailModule,
     DietsModule,
     RecipesModule,
-    IngredientsModule],
+    IngredientsModule,
+    FitnessModule,
+    ExerciseModule],
   controllers: [AppController],
   providers: [AppService, MailService],
 })
