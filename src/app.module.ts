@@ -33,7 +33,7 @@ import { resolve } from 'path';
         ServeStaticModule.forRootAsync({
             useFactory: () => [
                 {
-                    rootPath: resolve(__dirname, 'static'),
+                    rootPath: resolve(__dirname,'static'),
                 },
             ],
         }),

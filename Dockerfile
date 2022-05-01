@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:16.14.2
 
 WORKDIR /diet-api
 
@@ -9,6 +9,6 @@ COPY . .
 EXPOSE 3000
 
 RUN npm install
+RUN npm i webpack 
 
-
-CMD ["npm", "run", "start"]
+CMD ["npm", "start"]

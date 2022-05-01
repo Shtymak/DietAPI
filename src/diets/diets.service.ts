@@ -61,6 +61,9 @@ export class DietsService {
     }
     const diet = await this.dietModel.findById(dietId)
     const recipe = await this.recipeModel.findById(recepieId)
+    console.log(recipe);
+    
+    
     if(!diet){
       throw new NotFoundException('Дієту не знайдено')
     }
@@ -97,7 +100,7 @@ export class DietsService {
       throw new NotFoundException('Дієту не знайдено')
     }
     const recipes = await this.recipeModel.find({
-      id: {
+      _id: {
         $in:
           diet.recipes
       },
@@ -126,6 +129,12 @@ export class DietsService {
     );
     return result;
   }
+async getAll(){
+  const diets = await this.dietModel.find();
+  const dietsDto = diets.map((diet) => new GetDietDto(diet));
+  return dietsDto;
+}
+
   async removeFromFavorite(dietId, id) {
     if (!Types.ObjectId.isValid(dietId)) {
       throw new NotFoundException('Дієту не знайдено')
@@ -153,7 +162,7 @@ export class DietsService {
       throw new NotFoundException('Помилка! Цей користувач не обирав улюблені дієти');
     }
     const favoriteObjects = await this.dietModel.find({
-      id:
+      _id:
         {$in: favorites.diets}
     })
     return favoriteObjects.map(x=>new GetDietDto(x));

@@ -65,13 +65,16 @@ export class RecipesService {
     if (!ingredient) {
       throw new NotFoundException("Інгредієнт не знайдено");
     }
-    const result = this.recipeModel.updateOne({
-      id: recipeId
+    console.log(recipeId);
+    
+    const result = await this.recipeModel.updateOne({
+      _id: recipeId
     }, {
       $addToSet: {
         ingredients: new Types.ObjectId(ingredientId)
       }
     });
+  
     return result;
   }
 
@@ -88,7 +91,7 @@ export class RecipesService {
       throw new NotFoundException("Інгредієнт не знайдено");
     }
     const result = await this.recipeModel.updateOne({
-        id: recipeId
+        _id: recipeId
       },
       {
         $pull: {

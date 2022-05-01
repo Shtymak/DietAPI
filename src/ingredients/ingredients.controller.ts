@@ -10,22 +10,22 @@ import { DietExeptionDto } from "../diets/dto/exeption.dto";
 export class IngredientsController {
   constructor(private readonly ingredientsService: IngredientsService) {}
 
-  @Post('/')
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    type: IngredientDto
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    type: DietExeptionDto
-  })
-  @ApiBearerAuth("Jwt-token")
-  @ApiHeader({ name: "Bearer token", required: true })
-  @Roles("ADMIN")
-  @UseGuards(RolesGuard)
-  async create(@Body() body: IngredientDto) {
+  @Post('/new')
+  // @ApiResponse({
+  //   status: HttpStatus.CREATED,
+  //   type: IngredientDto
+  // })
+  // @ApiResponse({
+  //   status: HttpStatus.INTERNAL_SERVER_ERROR,
+  //   type: DietExeptionDto
+  // })
+  // @ApiBearerAuth("Jwt-token")
+  // @ApiHeader({ name: "Bearer token", required: true })
+  // @Roles("ADMIN")
+  // @UseGuards(RolesGuard)
+  async create(@Body() body) {
     try{
-      const ingredient = await this.ingredientsService.create(body)
+      const ingredient = await this.ingredientsService.create(body.name)
       return ingredient;
     }catch (e) {
       throw new HttpException(e.message, e.status)

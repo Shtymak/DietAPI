@@ -149,6 +149,8 @@ export class RecipesController {
   async addIngredient(@Body() body: InputIngredientDto) {
     try {
       const result = await this.recipesService.addIngredient(body);
+      console.log(result);
+      
       return result.modifiedCount > 0 ? { status: "OK" } : { status: "FAIL" };
     } catch (e) {
       throw new HttpException(e.message, e.status);

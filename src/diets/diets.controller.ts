@@ -35,6 +35,22 @@ export class DietsController {
   constructor(private readonly dietsService: DietsService) {
   }
 
+  @Get('/all')
+  @ApiOperation({
+    summary: "Всі дієти",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK, type: [GetDietDto]
+  })
+  async getAll(){
+    try {
+      const diets = await this.dietsService.getAll();
+      return diets;
+    } catch (e) {
+      throw new HttpException(e.message, e.status);
+    }
+  }
+
   @Post("/")
   @ApiOperation({
     summary: "Створення дієти"
@@ -118,6 +134,8 @@ export class DietsController {
   async addRecipe(@Body() body: AddRecipeDto) {
     try {
       const { recipeId, dietId } = body;
+      console.log(recipeId, dietId);
+      
       const result = await this.dietsService.addRecipe(dietId, recipeId);
       return result;
     } catch (e) {

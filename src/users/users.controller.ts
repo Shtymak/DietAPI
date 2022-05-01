@@ -27,7 +27,7 @@ const fileType = '.jpg';
 const path = require('path');
 const uuid = require('uuid')
 
-@Controller("api/user")
+@Controller("/api/user")
 @ApiTags("Користувачі")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {
