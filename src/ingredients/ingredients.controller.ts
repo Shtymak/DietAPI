@@ -1,3 +1,4 @@
+import { ApiOperation } from '@nestjs/swagger';
 import {
     Body,
     Controller,
@@ -23,6 +24,7 @@ export class IngredientsController {
     constructor(private readonly ingredientsService: IngredientsService) {}
 
     @Post('/new')
+    @ApiOperation({ summary: 'Додати інгредієнт' })
     @ApiResponse({
         status: HttpStatus.CREATED,
         type: IngredientDto,

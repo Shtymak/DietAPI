@@ -1,18 +1,25 @@
-import { FavoriteFitnessesDocument } from './../models/FavoriteFitnesses';
-import { ExerciseDocument } from './../exercise/exercise.model';
+import {
+    FavoriteFitnesses,
+    FavoriteFitnessesDocument,
+} from './../models/FavoriteFitnesses';
+import { Exercise, ExerciseDocument } from './../exercise/exercise.model';
 import { BadRequestException } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { GetFitnessDto } from './dto/get-fintess.dto';
 import { CreateFitnessDto } from './dto/creare-fitness.dto';
 import { Model } from 'mongoose';
-import { FitnessDocument } from './fitness.model';
+import { Fitness, FitnessDocument } from './fitness.model';
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class FitnessService {
     constructor(
+        @InjectModel(Fitness.name)
         private readonly fitnessModel: Model<FitnessDocument>,
+        @InjectModel(Exercise.name)
         private readonly exerciseModel: Model<ExerciseDocument>,
+        @InjectModel(FavoriteFitnesses.name)
         private readonly favoriteFintnessModel: Model<FavoriteFitnessesDocument>
     ) {}
 
@@ -76,12 +83,6 @@ export class FitnessService {
             const fitness = await this.fitnessModel.findById(id);
             if (!fitness) {
                 throw new BadRequestException('Тренування не знайдено');
-            }
-            const candidate = fitness.exercises.find(
-                new Types.ObjectId(fitnessId)
-            );
-            if (!candidate) {
-                throw new BadRequestException('Вправа не знайдена');
             }
             const result = this.favoriteFintnessModel.updateOne(
                 {

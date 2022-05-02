@@ -11,7 +11,7 @@ import { IOFintessDto } from './dto/io-fitness.dto';
 import { JwtAuthGuard } from 'src/token/auth.guard';
 import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
 
-@Controller('fitness')
+@Controller('api/fitness')
 @ApiTags('Тренування')
 export class FitnessController {
     constructor(private readonly fitnessService: FitnessService) {}
@@ -76,6 +76,10 @@ export class FitnessController {
     }
 
     @Put('/add')
+    @ApiOperation({ summary: 'Додати тренування' })
+    @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not found' })
+    @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+    @ApiResponse({ status: HttpStatus.OK })
     async addExercise(@Body() body: IOExerciseDto) {
         const result = await this.fitnessService.addExercise(
             body.id,
