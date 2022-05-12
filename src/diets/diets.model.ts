@@ -13,6 +13,10 @@ export class Diet {
   @Prop({required: true})
   image: string
 
+  @ApiProperty({example: "Дієта для гурманів", description:"Опис"})
+  @Prop()
+  description: string;
+
   @ApiProperty({example: "[ObjectId('fwefjhpo5sdop123odjco32ioidwe')]", description:"Рецепти, які належать до дієти"})
   @Prop({required: true})
   recipes: [mongoose.Schema.Types.ObjectId]

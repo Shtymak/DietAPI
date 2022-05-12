@@ -13,7 +13,7 @@ import {
 } from "@nestjs/common";
 import { DietsService } from "./diets.service";
 import { CreateDietDto } from "./dto/create-diet.dto";
-import { ApiBearerAuth, ApiHeader, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiHeader, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { GetDietDto } from "./dto/get-diet-dto";
 import { UpdateDietDto } from "./dto/update-diet.dto";
 import { DietExeptionDto } from "./dto/exeption.dto";
@@ -99,14 +99,8 @@ export class DietsController {
   @UseGuards(RolesGuard)
   async update(@Body() body: UpdateDietDto) {
     try {
-      const { id, name } = body;
-      // const errors = validationResult(req);
-      // if (!errors.isEmpty()) {
-      //   return next(
-      //     ApiError.BadRequest('Помилка валідації', errors.array())
-      //   );
-      // }
-      const result = await this.dietsService.update(id, name);
+      const { id, name, description } = body;
+      const result = await this.dietsService.update(id, name, description);
       return result;
     } catch (e) {
       throw new HttpException(e.message, e.status);
@@ -265,6 +259,19 @@ export class DietsController {
       const { id } = req.user;
       const favorites = await this.dietsService.getFavorites(id);
       return  favorites;
+    } catch (e) {
+      throw new HttpException(e.message, e.status);
+    }
+  }
+
+  @Get('/:id')
+  @ApiOperation({ summary:"Отримати дієту по id" })
+  @ApiResponse({ status: HttpStatus.OK, type: GetDietDto })
+  @ApiNotFoundResponse({ description: "Дієту не знайдено" })
+  async getDiet(@Param('id') id: string) {
+    try {
+      const diet = await this.dietsService.getDiet(id);
+      return diet;
     } catch (e) {
       throw new HttpException(e.message, e.status);
     }

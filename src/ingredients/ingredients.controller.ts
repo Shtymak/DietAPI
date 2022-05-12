@@ -1,9 +1,11 @@
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiParam } from '@nestjs/swagger';
 import {
     Body,
     Controller,
+    Get,
     HttpException,
     HttpStatus,
+    Param,
     Post,
     UseGuards,
 } from '@nestjs/common';
@@ -40,6 +42,19 @@ export class IngredientsController {
     async create(@Body() body) {
         try {
             const ingredient = await this.ingredientsService.create(body.name);
+            return ingredient;
+        } catch (e) {
+            throw new HttpException(e.message, e.status);
+        }
+    }
+    @Get('/:id')
+    @ApiOperation({ summary: 'Отримати інгредієнт' })
+    @ApiParam({ name: 'id' })
+    @ApiResponse({ status: HttpStatus.OK, type: IngredientDto })
+    @ApiResponse({ status: HttpStatus.NOT_FOUND, type: DietExeptionDto })
+    async get(@Param('id') id: string) {
+        try {
+            const ingredient = await this.ingredientsService.get(id);
             return ingredient;
         } catch (e) {
             throw new HttpException(e.message, e.status);

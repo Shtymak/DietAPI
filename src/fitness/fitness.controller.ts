@@ -24,6 +24,13 @@ export class FitnessController {
         return fitness;
     }
 
+    @Get('/all')
+    @ApiOperation({ summary: 'Список всіх тренувань' })
+    @ApiResponse({ status: HttpStatus.OK, type: [GetFitnessDto] })
+    async findAll() {
+        const fitness = await this.fitnessService.findAll();
+        return fitness;
+    }
     @Get('/:id')
     @ApiOperation({ summary: 'Отримати тренування по ідентифікатору' })
     @ApiResponse({ status: HttpStatus.OK, type: GetFitnessDto })
@@ -33,13 +40,6 @@ export class FitnessController {
         return fitness;
     }
 
-    @Get('/all')
-    @ApiOperation({ summary: 'Список всіх тренувань' })
-    @ApiResponse({ status: HttpStatus.OK, type: [GetFitnessDto] })
-    async findAll() {
-        const fitness = await this.fitnessService.findAll();
-        return fitness;
-    }
     @Put('/favorite/add')
     @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Додати тренування до улюблених' })

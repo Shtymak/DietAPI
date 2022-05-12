@@ -40,7 +40,7 @@ export class DietsService {
     });
     return new GetDietDto(diet);
   }
-  async update(id: string, name: string) : Promise<GetDietDto>  {
+  async update(id: string, name: string, description: string) : Promise<GetDietDto>  {
     const diet = await this.dietModel.findById(id)
     if(!diet){
       throw new NotFoundException('Дієту не знайдено')
@@ -50,6 +50,7 @@ export class DietsService {
       {
         $set: {
           name: name,
+          description: description
         },
       }
     );
@@ -107,6 +108,14 @@ export class DietsService {
     });
     const recipesDto = recipes.map((recipe) => new GetRecipeDto(recipe));
     return recipesDto;
+  }
+
+  async getDiet(id: string) {
+    const diet = await this.dietModel.findById(id);
+    if (!diet) {
+      throw new NotFoundException('Дієту не знайдено')
+    }
+    return new GetDietDto(diet);
   }
 
   async addToFavorite(dietId, id) {
