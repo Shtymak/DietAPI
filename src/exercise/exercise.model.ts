@@ -11,7 +11,7 @@ export class Exercise {
     name: string;
     @ApiProperty({ example: 7200, description: 'Протяжність вправи' })
     @Prop({ required: true })
-    length: number;≠
+    length: number;
     @ApiProperty({ example: 'File', description: 'Фото' })
     @Prop({ required: true })
     image: string;
