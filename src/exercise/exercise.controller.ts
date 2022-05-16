@@ -1,5 +1,18 @@
-import { Get, HttpException, HttpStatus, Post } from '@nestjs/common';
-import { ApiBody, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import {
+    Body,
+    Get,
+    HttpException,
+    HttpStatus,
+    Param,
+    Post,
+} from '@nestjs/common';
+import {
+    ApiBody,
+    ApiNotFoundResponse,
+    ApiOperation,
+    ApiResponse,
+    ApiParam,
+} from '@nestjs/swagger';
 import { Controller } from '@nestjs/common';
 import { ExerciseService } from './exercise.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -13,7 +26,7 @@ export class ExerciseController {
     @ApiOperation({ summary: 'Створити вправу' })
     @ApiResponse({ status: HttpStatus.CREATED })
     @ApiBody({ type: CreateExerciseDto })
-    async create(exercise: CreateExerciseDto) {
+    async create(@Body() exercise: CreateExerciseDto) {
         const createdExercise = await this.exerciseService.create(exercise);
         return createdExercise;
     }
@@ -23,12 +36,12 @@ export class ExerciseController {
     @ApiParam({ name: 'id' })
     @ApiResponse({ status: HttpStatus.OK, type: CreateExerciseDto })
     @ApiNotFoundResponse({ description: 'Вправа не знайдена' })
-    async get(id: string) {
+    async get(@Param('id') id: string) {
         try {
             const exercise = await this.exerciseService.get(id);
             return exercise;
         } catch (e) {
             throw new HttpException(e.message, e.status);
-        }   
+        }
     }
 }

@@ -46,9 +46,9 @@ export class FitnessService {
             if (!exercise) {
                 throw new BadRequestException('Вправа не знайдена');
             }
-            const result = await this.fitnessModel.updateOne(
-                { _id: id },
-                { $addToSet: new Types.ObjectId(exerciseId) }
+            const result = await this.fitnessModel.findByIdAndUpdate(
+                { _id: fitness._id },
+                { $addToSet: { exercises: new Types.ObjectId(exerciseId) } }
             );
             return result;
         } catch (e) {
